@@ -17,6 +17,7 @@ struct ContentView: View {
     @State private var userScore = 0
     @State private var questionNumber = 1
     @State private var questionLimit = false
+    @State private var tappedFlag = -1
     
     @State private var showingAlert = false
     var body: some View {
@@ -47,11 +48,21 @@ struct ContentView: View {
                     ForEach(0..<3) { number in
                         Button {
                             flagTapped(number)
+                            
                         } label: {
                             Image(countries[number])
                                 .clipShape(.capsule)
                                 .shadow(radius: 10)
+                                .rotation3DEffect(
+                                    .degrees( tappedFlag == number ? 360:0),
+                                                          axis: /*@START_MENU_TOKEN@*/(x: 0.0, y: 1.0, z: 0.0)/*@END_MENU_TOKEN@*/
+                                )
+                                .animation(.default, value: tappedFlag)
+                                .opacity(tappedFlag == -1 ||  tappedFlag == number ? 1.0 : 0.25)
+                                .scaleEffect(tappedFlag == -1 ||  tappedFlag == number ? 1.0 : 0.5)
                         }
+                        
+                        
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -94,12 +105,14 @@ struct ContentView: View {
             questionLimit = true
 
         }
+        tappedFlag = number
         showingScore = true
     }
     
     func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+        tappedFlag = -1
 
     }
     func restartTheGame() {
